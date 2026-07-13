@@ -10,21 +10,19 @@
       padding-top: 350px;
       transition: background-color 1.0s;
     }
-
-    button {
-      padding: 10px 10px;
-
+    p.label {
       font-size: 16px;
-      cursor: pointer;
     }
-
     #colorText {
       position: fixed;
       bottom: 10px;
-       left: 0;
-       right: 0;
-       text-align: center;
-       font-size: 18px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 18px;
+    }
+    #inputColor{
+      cursor: pointer;
     }
   </style>
 </head>
@@ -32,24 +30,21 @@
 
   <h1>Color Picker</h1>
 
-  <button onclick="changeColor()">Choose a Color</button>
-  <input type="color" id ="inputColor">
+  <p class="label">Choose a color</p>
+  <input type="color" id="inputColor">
 
   <p id="colorText"> </p>
 
   <script>
-    function changeColor() {
-      const inputColor = document.getElementById("inputColor");
-      inputColor.click();
+    const inputColor = document.getElementById("inputColor");
 
-      inputColor.addEventListener("change", function() {
+    inputColor.addEventListener("input", function swap() {
       const chosenColor = inputColor.value;
 
-        document.body.style.backgroundColor = chosenColor;
+      document.body.style.backgroundColor = chosenColor;
 
-        document.getElementById("colorText").textContent = "The color you see is " + chosenColor;
-      });
-    }
+      document.getElementById("colorText").textContent = "The color you see is " + chosenColor;
+    });
   </script>
 
 </body>
