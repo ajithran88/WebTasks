@@ -21,7 +21,7 @@
       text-align: center;
       font-size: 18px;
     }
-    #inputColor{
+    #inputColor {
       cursor: pointer;
     }
   </style>
@@ -38,6 +38,7 @@
   <script>
     const inputColor = document.getElementById("inputColor");
 
+    // "input" fires continuously while dragging, so the background updates live
     inputColor.addEventListener("input", function swap() {
       const chosenColor = inputColor.value;
 
