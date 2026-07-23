@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Food Category information</title>
+
+  <style>
+      body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 450px auto;
+      padding: 0 20px;
+    }
+    select {
+      padding: 8px;
+      font-size: 16px;
+      width: 100%;
+      cursor: pointer;
+    }
+    #info {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    #info img {
+      max-width: 150px;
+      display: block;
+    }
+    #info p {
+      white-space: pre-line;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 >Food Category information</h1>
+
+  <!-- dropdown -->
+  <label for="category-select">Pick a category:</label>
+  <select id="category-select">
+    <option value="">Loading categories...</option>
+  </select>
+
+  <!-- container for selected category's details  -->
+  <div id="info">Select a category to see its information.</div>
+
+  <script>
+    // grab the two elements we need to read from and write to
+    const select = document.getElementById("category-select");
+    const info = document.getElementById("info");
+
+    const API_URL = "https://www.themealdb.com/api/json/v1/1/categories.php";
+
+    // holds the parsed data 
+    let categories = [];
+
+    // GET request fires on page load 
+    fetch(API_URL)
+      .then(function (response) {
+        
+        if (!response.ok) {
+          throw new Error("Server responded with " + response.status);
+        }
+        // parse the JSON text from the response into JS object
+        return response.json();
+      })
+      .then(function (data) {
+      categories = data.categories;
+
+        // sort by A-Z
+        categories.sort(function (a, b) {
+          return a.strCategory.localeCompare(b.strCategory);
+        });
+
+        select.innerHTML = "<option value=''>Choose a category...</option>";
+
+        for (let i = 0; i < categories.length; i++) {
+          const option = document.createElement("option");
+          option.value = categories[i].strCategory;
+          option.textContent = categories[i].strCategory;
+          select.appendChild(option);
+        }
+      })
+      .catch(function (error) {
+        // network or API fail error handeling 
+        select.innerHTML = "<option value=''>Could not load categories</option>";
+        info.textContent = "Error loading data from the API.";
+        console.log(error);
+      });
+
+    // runs every time user picks a different category
+    select.addEventListener("change", function () {
+      const chosenName = select.value;
+
+      // they re-selected the placeholder, so reset the box and stop
+      if (chosenName === "") {
+        info.textContent = "Select a category to see its information.";
+        return;
+      }
+
+      // look up the matching object in the cached array
+      const category = categories.find(function (c) {
+        return c.strCategory === chosenName;
+      });
+
+      // build the details HTML and drop it into the results 
+      info.innerHTML =
+        "<h2>" + category.strCategory + "</h2>" +
+        "<img src='" + category.strCategoryThumb + "' alt='" + category.strCategory + "'>" +
+        "<p>" + category.strCategoryDescription + "</p>";
+    });
+  </script>
+</body>
+</html>
