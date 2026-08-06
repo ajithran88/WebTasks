@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Workout Tracker</title>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    input, button {
+      padding: 8px;
+      font-size: 16px;
+    }
+    .inputs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .inputs input {
+      width: 100%;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    .done {
+      text-decoration: line-through;
+      color: #888;
+    }
+    .total {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Workout Tracker</h1>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function ExerciseRow({ exercise, onToggle, onRemove }) {
+      return (
+        <div className="row">
+          <span className={exercise.done ? "done" : ""}>
+            {exercise.name} - {exercise.sets} x {exercise.reps}
+          </span>
+          <span>
+            <button onClick={() => onToggle(exercise.id)}>
+              {exercise.done ? "Undo" : "Done"}
+            </button>
+            <button onClick={() => onRemove(exercise.id)}>x</button>
+          </span>
+        </div>
+      );
+    }
+
+    function App() {
+      const [exercises, setExercises] = useState([]);
+      const [name, setName] = useState("");
+      const [sets, setSets] = useState("");
+      const [reps, setReps] = useState("");
+
+      function addExercise() {
+        if (!name.trim() || !sets || !reps) return;
+
+        setExercises([
+          ...exercises,
+          {
+            id: Date.now(),
+            name: name.trim(),
+            sets,
+            reps,
+            done: false,
+          },
+        ]);
+
+        setName("");
+        setSets("");
+        setReps("");
+      }
+
+      function toggleDone(id) {
+        setExercises(
+          exercises.map((ex) =>
+            ex.id === id ? { ...ex, done: !ex.done } : ex
+          )
+        );
+      }
+
+      function removeExercise(id) {
+        setExercises(exercises.filter((ex) => ex.id !== id));
+      }
+
+      const doneCount = exercises.filter((ex) => ex.done).length;
+
+      return (
+        <div>
+          <div className="inputs">
+            <input
+              placeholder="Exercise"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              placeholder="Sets"
+              value={sets}
+              onChange={(e) => setSets(e.target.value)}
+            />
+            <input
+              placeholder="Reps"
+              value={reps}
+              onChange={(e) => setReps(e.target.value)}
+            />
+            <button onClick={addExercise}>Add</button>
+          </div>
+
+          {exercises.length === 0 ? (
+            <p>Add an exercise to start your workout.</p>
+          ) : (
+            exercises.map((ex) => (
+              <ExerciseRow
+                key={ex.id}
+                exercise={ex}
+                onToggle={toggleDone}
+                onRemove={removeExercise}
+              />
+            ))
+          )}
+
+          <div className="total">
+            Done: {doneCount} / {exercises.length}
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
